@@ -2,8 +2,9 @@ let spriteSheets = [];
 let characters = [];
 let frameWidth = 80;
 let frameHeight = 80;
-let totalFrames = 4; // Number of frames in walking animation
-let frameDelay = 8; // Adjust timing so the animation looks natural
+let totalFrames = 4; // Number of walking animation frames
+let frameDelay = 8; // Controls animation speed
+let keys = {}; // Tracks which keys are held
 
 function preload() {
   // Load at least three different character sprite sheets
@@ -24,6 +25,28 @@ function setup() {
 function draw() {
   background(255);
 
+  // Check for movement keys and update characters accordingly
+  let moving = false;
+  if (keys[LEFT_ARROW]) {
+    for (let character of characters) {
+      character.move(-3); // Move left
+    }
+    moving = true;
+  }
+  if (keys[RIGHT_ARROW]) {
+    for (let character of characters) {
+      character.move(3); // Move right
+    }
+    moving = true;
+  }
+
+  // Stop animation if no movement keys are pressed
+  if (!moving) {
+    for (let character of characters) {
+      character.stop();
+    }
+  }
+
   // Update and display all characters
   for (let character of characters) {
     character.update();
@@ -32,24 +55,11 @@ function draw() {
 }
 
 function keyPressed() {
-  if (keyCode === LEFT_ARROW) {
-    for (let character of characters) {
-      character.move(-3); // Move left
-    }
-  } else if (keyCode === RIGHT_ARROW) {
-    for (let character of characters) {
-      character.move(3); // Move right
-    }
-  }
+  keys[keyCode] = true;
 }
 
-// Stop movement when keys are released
 function keyReleased() {
-  if (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW) {
-    for (let character of characters) {
-      character.stop(); // Stop animation when no key is pressed
-    }
-  }
+  keys[keyCode] = false;
 }
 
 class Character {
@@ -93,9 +103,9 @@ class Character {
   }
 
   move(dx) {
-    this.x += dx;
-    this.direction = dx > 0 ? 1 : -1;
-    this.walking = true;
+    this.x += dx; // Moves the character left or right
+    this.direction = dx > 0 ? 1 : -1; // Determines facing direction
+    this.walking = true; // Triggers animation
   }
 
   stop() {
