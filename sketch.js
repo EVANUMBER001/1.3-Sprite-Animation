@@ -17,7 +17,7 @@ function setup() {
 
   // Instantiate three characters from different sprite sheets at random positions
   for (let i = 0; i < spriteSheets.length; i++) {
-    characters.push(new Character(random(width), random(height - 80), spriteSheets[i]));
+    characters.push(new Character(random(width), height - frameHeight, spriteSheets[i]));
   }
 }
 
@@ -43,6 +43,15 @@ function keyPressed() {
   }
 }
 
+// Stop movement when keys are released
+function keyReleased() {
+  if (keyCode === LEFT_ARROW || keyCode === RIGHT_ARROW) {
+    for (let character of characters) {
+      character.stop(); // Stop animation when no key is pressed
+    }
+  }
+}
+
 class Character {
   constructor(x, y, spriteSheet) {
     this.x = x;
@@ -55,7 +64,6 @@ class Character {
   }
 
   update() {
-    // Only animate when walking
     if (this.walking) {
       this.frameCounter++;
       if (this.frameCounter >= frameDelay) {
@@ -63,7 +71,7 @@ class Character {
         this.currentFrame = (this.currentFrame + 1) % totalFrames;
       }
     } else {
-      this.currentFrame = 0; // Standing frame
+      this.currentFrame = 0; // Standing frame (first frame)
     }
   }
 
@@ -88,5 +96,9 @@ class Character {
     this.x += dx;
     this.direction = dx > 0 ? 1 : -1;
     this.walking = true;
+  }
+
+  stop() {
+    this.walking = false; // Stop animation
   }
 }
